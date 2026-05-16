@@ -1,0 +1,8 @@
+{
+  "name": "Start in Web",
+  "description": "Создание стильных сайтов-визиток для малого и среднего бизнеса в Москве и МО. Сайт-визитка за 2 дня.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
