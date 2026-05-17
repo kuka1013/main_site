@@ -10,6 +10,10 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", vercel: !!process.env.VERCEL });
+});
+
 const typeMap: Record<string, string> = {
   // Shops
   'supermarket': 'Супермаркет', 'convenience': 'Продукты', 'clothes': 'Магазин одежды',
