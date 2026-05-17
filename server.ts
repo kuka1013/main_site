@@ -176,9 +176,19 @@ async function fetchDistrictData(district: string) {
       if (e.tags.leisure && ['playground', 'pitch', 'park', 'garden', 'nature_reserve', 'sports_centre', 'stadium', 'track'].includes(e.tags.leisure) && !e.tags.name) return null;
       if (e.tags.leisure === 'playground') return null; // Explicitly block playgrounds
       if (e.tags.highway || e.tags.public_transport || e.tags.railway) return null;
+      if (e.tags.barrier) return null;
       
-      const typeKey = e.tags.shop || e.tags.amenity || e.tags.office || e.tags.leisure || e.tags.craft || e.tags.healthcare || e.tags.tourism || e.tags.building || e.tags.man_made || e.tags.club || e.tags.sport || e.tags.historic || e.tags.emergency;
-      let typeName = typeMap[typeKey] || 'Другое';
+      let typeKey = e.tags.shop || e.tags.amenity || e.tags.office || e.tags.leisure || e.tags.craft || e.tags.healthcare || e.tags.tourism || e.tags.building || e.tags.man_made || e.tags.club || e.tags.sport || e.tags.historic || e.tags.emergency;
+      
+      let typeName = typeMap[typeKey];
+      if (!typeName) {
+         if (e.tags.shop) typeName = 'Магазин';
+         else if (e.tags.office) typeName = 'Офис';
+         else if (e.tags.craft) typeName = 'Сервис / Услуги';
+         else if (e.tags.healthcare) typeName = 'Медицина';
+         else if (e.tags.tourism) typeName = 'Туризм';
+         else typeName = 'Другое';
+      }
 
       // Skip non-business generic things if they just have "Другое" and no name
       if (typeName === 'Другое' && !e.tags.name && !e.tags.brand && !e.tags.operator && !e.tags['name:ru']) {
@@ -186,9 +196,9 @@ async function fetchDistrictData(district: string) {
       }
 
       // Skip non-business "buildings"
-      if (typeKey === e.tags.building && !e.tags.shop && !e.tags.amenity && !e.tags.office && !e.tags.leisure && !e.tags.craft && !e.tags.healthcare) {
+      if (e.tags.building && !e.tags.shop && !e.tags.amenity && !e.tags.office && !e.tags.leisure && !e.tags.craft && !e.tags.healthcare) {
          if (!e.tags.name && !e.tags.brand && !e.tags.operator && !e.tags['name:ru']) {
-            return null; // Skip unnamed generic buildings, otherwise we get thousands of residential buildings
+            return null; // Skip unnamed generic buildings
          }
       }
 
