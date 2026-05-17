@@ -1,0 +1,34 @@
+{
+  "entities": {
+    "BusinessStatus": {
+      "title": "BusinessStatus",
+      "description": "Represents the outreach status of a business in a specific district.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["none", "rejected", "interested"],
+          "description": "The current outreach status of the business"
+        },
+        "district": {
+          "type": "string",
+          "description": "The district the business belongs to"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "timestamp",
+          "description": "When the status was last updated"
+        }
+      },
+      "required": ["status", "district", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/business_statuses/{businessId}": {
+      "schema": {
+        "$ref": "#/entities/BusinessStatus"
+      },
+      "description": "Stores the outreach status for each business based on their OSM ID."
+    }
+  }
+}

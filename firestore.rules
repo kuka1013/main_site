@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Primitive Definition
+    function isSignedIn() { return request.auth != null; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    function isValidBusinessStatus(data) {
+      return data.keys().hasAll(['status', 'district', 'updatedAt'])
+        && data.keys().size() == 3
+        && data.status is string
+        && data.status in ['none', 'rejected', 'interested']
+        && data.district is string
+        && data.district.size() <= 200
+        && data.updatedAt == request.time;
+    }
+    
+    function isValidBusinessStatusUpdate(data) {
+      // Allow updates to status and updatedAt
+      return data.status is string
+        && data.status in ['none', 'rejected', 'interested']
+        && (data.district == existing().district)
+        && data.updatedAt == request.time;
+    }
+
+    match /business_statuses/{businessId} {
+      // For now, allowing reading for all (will be locked down later when auth is added)
+      allow read: if true;
+      
+      // We will allow anyone to create/update status before auth is fully implemented so it works immediately.
+      // We will tighten this once auth is configured
+      allow create: if isValidId(businessId) && isValidBusinessStatus(incoming());
+      allow update: if isValidId(businessId) 
+                     && isValidBusinessStatusUpdate(incoming())
+                     && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+    }
+  }
+}
