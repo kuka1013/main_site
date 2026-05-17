@@ -120,9 +120,17 @@ export default function App() {
 
   useEffect(() => {
     fetch('/api/districts')
-      .then(r => r.json())
+      .then(async r => {
+         if (!r.ok) throw new Error('API Error');
+         return r.json();
+      })
       .then(d => {
         setDistricts(d);
+        setInitialLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Ошибка загрузки районов. Убедитесь, что серверная часть запущена.');
         setInitialLoading(false);
       });
   }, []);
