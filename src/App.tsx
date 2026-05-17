@@ -130,7 +130,6 @@ export default function App() {
       })
       .catch(err => {
         console.error(err);
-        alert('Ошибка загрузки районов. Убедитесь, что серверная часть запущена.');
         setInitialLoading(false);
       });
   }, []);
