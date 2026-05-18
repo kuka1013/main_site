@@ -18,12 +18,3 @@
   }
 }
 
-/* Hide Yandex Map Promotional Overlays */
-[class*="copyright"], [class*="gototech"], [class*="gotoymaps"], [class*="promo"] {
-  display: none !important;
-}
-
-.ymaps-2-1-79-map-copyrights-promo, .ymaps-2-1-79-copyright__wrap {
-  display: none !important;
-}
-
